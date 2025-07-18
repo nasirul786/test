@@ -3,293 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sheets to JSON Converter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Sheets to JSON | Glass Converter</title>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4285f4;
-            --primary-dark: #3367d6;
-            --text: #202124;
-            --text-secondary: #5f6368;
-            --bg: #f8f9fa;
-            --card-bg: #ffffff;
-            --border: #dadce0;
-            --success: #34a853;
-            --error: #ea4335;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.6;
-            color: var(--text);
-            background-color: var(--bg);
-            padding: 0;
-            margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
-            width: 100%;
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
-
-        header {
-            background-color: var(--card-bg);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-            margin-bottom: 2rem;
+        
+        .glass-button {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
         }
-
-        h1 {
-            font-size: 1.75rem;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 0.5rem;
+        
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
-
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
+        
+        .glass-input {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
         }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--text);
-        }
-
-        .input-group {
-            display: flex;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            transition: all 0.2s ease;
-        }
-
-        .input-group:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(66,133,244,0.2);
-        }
-
-        .input-prefix {
-            padding: 0.75rem 1rem;
-            background-color: #f1f3f4;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            white-space: nowrap;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border: none;
+        
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.2);
             outline: none;
-            font-size: 0.875rem;
-            background-color: var(--card-bg);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
         }
-
-        button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
         }
-
-        button:hover {
-            background-color: var(--primary-dark);
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        button:disabled {
-            background-color: #e0e0e0;
-            cursor: not-allowed;
+        
+        .pulse {
+            animation: pulse 2s infinite;
         }
-
-        .button-icon {
-            margin-right: 0.5rem;
-        }
-
-        .result-container {
-            display: none;
-            margin-top: 2rem;
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .copy-btn {
-            background-color: transparent;
-            color: var(--primary);
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border);
-        }
-
-        .copy-btn:hover {
-            background-color: rgba(66,133,244,0.08);
-        }
-
-        pre {
-            background-color: #f6f8fa;
-            padding: 1rem;
-            border-radius: 6px;
-            overflow-x: auto;
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            border: 1px solid var(--border);
-            max-height: 500px;
-        }
-
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-        }
-
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(66,133,244,0.2);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 0.75rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .status {
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            display: none;
-        }
-
-        .status.success {
-            background-color: rgba(52,168,83,0.1);
-            color: var(--success);
-            display: block;
-        }
-
-        .status.error {
-            background-color: rgba(234,67,53,0.1);
-            color: var(--error);
-            display: block;
-        }
-
-        footer {
-            margin-top: auto;
-            padding: 1.5rem;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 1.5rem 1rem;
-            }
-            
-            .card {
-                padding: 1.5rem;
-            }
-            
-            .input-group {
-                flex-direction: column;
-            }
-            
-            .input-prefix {
-                padding: 0.5rem 1rem;
-            }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
         }
     </style>
 </head>
-<body>
-    <header>
-        <div class="container">
-            <h1>Google Sheets to JSON Converter</h1>
-            <p class="subtitle">Convert your public Google Sheets data to JSON format</p>
-        </div>
-    </header>
+<body class="flex flex-col items-center justify-center p-4 md:p-8">
+    <div class="w-full max-w-4xl">
+        <!-- Header -->
+        <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            class="text-center mb-8"
+        >
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">Sheets to JSON</h1>
+            <p class="text-xl text-white/80">Convert Google Sheets to beautiful JSON with glassmorphism effects</p>
+        </motion.div>
 
-    <main class="container">
-        <div class="card">
-            <div class="form-group">
-                <label for="sheet-url">Google Sheet URL or ID</label>
-                <div class="input-group">
-                    <span class="input-prefix">https://docs.google.com/spreadsheets/d/</span>
-                    <input type="text" id="sheet-url" placeholder="1KBU2nmrmrf1LvRFn6yFRYwFC2nUMiiS7RzPRiMNFhRM" value="1KBU2nmrmrf1LvRFn6yFRYwFC2nUMiiS7RzPRiMNFhRM">
+        <!-- Main Card -->
+        <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            class="glass-card p-6 md:p-8 mb-8 fade-in"
+        >
+            <div class="mb-6">
+                <label for="sheet-url" class="block text-sm font-medium text-white/80 mb-2">Google Sheet URL or ID</label>
+                <div class="flex rounded-lg overflow-hidden">
+                    <span class="inline-flex items-center px-4 py-3 bg-white/10 text-white/80 text-sm border-r border-white/10">
+                        https://docs.google.com/spreadsheets/d/
+                    </span>
+                    <input 
+                        type="text" 
+                        id="sheet-url" 
+                        class="glass-input flex-1 px-4 py-3 text-white placeholder-white/50 focus:ring-0 focus:border-white/30 text-sm"
+                        placeholder="1KBU2nmrmrf1LvRFn6yFRYwFC2nUMiiS7RzPRiMNFhRM"
+                        value="1KBU2nmrmrf1LvRFn6yFRYwFC2nUMiiS7RzPRiMNFhRM"
+                    >
                 </div>
             </div>
 
-            <div class="form-group">
-                <button id="convert-btn">
-                    <span class="button-icon">🔁</span>
+            <div class="flex justify-center">
+                <button 
+                    id="convert-btn"
+                    class="glass-button flex items-center px-6 py-3 rounded-lg text-white font-medium pulse"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                    </svg>
                     Convert to JSON
                 </button>
             </div>
 
-            <div id="status-message" class="status"></div>
-        </div>
+            <div id="status-message" class="mt-4 text-center text-sm hidden"></div>
+        </motion.div>
 
-        <div id="result-container" class="result-container">
-            <div class="result-header">
-                <h2>JSON Output</h2>
-                <button id="copy-btn" class="copy-btn">
-                    <span class="button-icon">📋</span>
+        <!-- Loading State -->
+        <motion.div 
+            id="loading"
+            initial={{ opacity: 0 }}
+            class="glass-card p-6 text-center mb-8 hidden"
+        >
+            <div class="flex justify-center items-center space-x-3">
+                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-white">Loading data from Google Sheets...</span>
+            </div>
+        </motion.div>
+
+        <!-- Result Card -->
+        <motion.div 
+            id="result-container"
+            initial={{ opacity: 0 }}
+            class="glass-card p-6 hidden"
+        >
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-white">JSON Output</h2>
+                <button 
+                    id="copy-btn"
+                    class="glass-button flex items-center px-4 py-2 rounded-lg text-white text-sm"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                        <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                    </svg>
                     Copy
                 </button>
             </div>
-            <pre id="output"></pre>
-        </div>
+            <pre id="output" class="bg-black/30 text-white p-4 rounded-lg overflow-x-auto text-sm max-h-96"></pre>
+        </motion.div>
+    </div>
 
-        <div id="loading" class="loading" style="display: none;">
-            <div class="spinner"></div>
-            <span>Loading data from Google Sheets...</span>
-        </div>
-    </main>
-
-    <footer>
+    <footer class="mt-8 text-center text-white/60 text-sm">
         <p>Works with public Google Sheets. Make sure your sheet is published to the web.</p>
     </footer>
 
@@ -345,19 +213,38 @@
 
             function showStatus(message, type) {
                 statusMessage.textContent = message;
-                statusMessage.className = 'status ' + type;
+                statusMessage.className = `text-center text-sm ${type === 'success' ? 'text-green-300' : 'text-red-300'}`;
+                statusMessage.classList.remove('hidden');
+                
+                // Animate status message
+                motion.animate(statusMessage, 
+                    { opacity: [0, 1], y: [-10, 0] },
+                    { duration: 0.3 }
+                );
             }
 
             function hideStatus() {
-                statusMessage.style.display = 'none';
+                motion.animate(statusMessage, 
+                    { opacity: [1, 0], y: [0, -10] },
+                    { 
+                        duration: 0.3,
+                        onComplete: () => statusMessage.classList.add('hidden')
+                    }
+                );
             }
 
             async function fetchGoogleSheetCSV(sheetId) {
                 // Clear previous results
                 output.textContent = '';
-                resultContainer.style.display = 'none';
-                loading.style.display = 'flex';
+                resultContainer.classList.add('hidden');
+                loading.classList.remove('hidden');
                 hideStatus();
+
+                // Animate loading in
+                motion.animate(loading, 
+                    { opacity: [0, 1], y: [-10, 0] },
+                    { duration: 0.3 }
+                );
 
                 // Construct the URL
                 let url;
@@ -409,13 +296,33 @@
                             return obj;
                         });
 
-                    loading.style.display = "none";
-                    output.textContent = JSON.stringify(data, null, 2);
-                    resultContainer.style.display = "block";
+                    // Animate loading out and result in
+                    motion.animate(loading, 
+                        { opacity: [1, 0], y: [0, -10] },
+                        { 
+                            duration: 0.3,
+                            onComplete: () => {
+                                loading.classList.add('hidden');
+                                output.textContent = JSON.stringify(data, null, 2);
+                                resultContainer.classList.remove('hidden');
+                                motion.animate(resultContainer, 
+                                    { opacity: [0, 1], y: [-10, 0] },
+                                    { duration: 0.5 }
+                                );
+                            }
+                        }
+                    );
+
                     showStatus('Data loaded successfully!', 'success');
                 } catch (error) {
                     console.error("Error fetching or parsing CSV:", error);
-                    loading.style.display = "none";
+                    motion.animate(loading, 
+                        { opacity: [1, 0], y: [0, -10] },
+                        { 
+                            duration: 0.3,
+                            onComplete: () => loading.classList.add('hidden')
+                        }
+                    );
                     showStatus(`Error: ${error.message}`, 'error');
                 }
             }
@@ -434,7 +341,12 @@
                 navigator.clipboard.writeText(output.textContent)
                     .then(() => {
                         const originalText = copyBtn.innerHTML;
-                        copyBtn.innerHTML = '<span class="button-icon">✓</span> Copied!';
+                        copyBtn.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Copied!
+                        `;
                         setTimeout(() => {
                             copyBtn.innerHTML = originalText;
                         }, 2000);
