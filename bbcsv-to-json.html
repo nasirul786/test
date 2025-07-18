@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheets to JSON Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4285f4;
+            --primary-dark: #3367d6;
+            --text: #202124;
+            --text-secondary: #5f6368;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --border: #dadce0;
+            --success: #34a853;
+            --error: #ea4335;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            width: 100%;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .input-group {
+            display: flex;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(66,133,244,0.2);
+        }
+
+        .input-prefix {
+            padding: 0.75rem 1rem;
+            background-color: #f1f3f4;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            outline: none;
+            font-size: 0.875rem;
+            background-color: var(--card-bg);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        button:disabled {
+            background-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+
+        .button-icon {
+            margin-right: 0.5rem;
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .copy-btn {
+            background-color: transparent;
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .copy-btn:hover {
+            background-color: rgba(66,133,244,0.08);
+        }
+
+        pre {
+            background-color: #f6f8fa;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            border: 1px solid var(--border);
+            max-height: 500px;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(66,133,244,0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.75rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .status.success {
+            background-color: rgba(52,168,83,0.1);
+            color: var(--success);
+            display: block;
+        }
+
+        .status.error {
+            background-color: rgba(234,67,53,0.1);
+            color: var(--error);
+            display: block;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .input-prefix {
+                padding: 0.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Google Sheets to JSON Converter</h1>
+            <p class="subtitle">Convert your public Google Sheets data to JSON format</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <div class="form-group">
+                <label for="sheet-url">Google Sheet URL or ID</label>
+                <div class="input-group">
+                    <span class="input-prefix">https://docs.google.com/spreadsheets/d/</span>
+                    <input type="text" id="sheet-url" placeholder="1KBU2nmrmrf1LvRFn6yFRYwFC2nUMiiS7RzPRiMNFhRM" value="1KBU2nmrmrf1LvRFn6yFRYwFC2nUMiiS7RzPRiMNFhRM">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button id="convert-btn">
+                    <span class="button-icon">🔁</span>
+                    Convert to JSON
+                </button>
+            </div>
+
+            <div id="status-message" class="status"></div>
+        </div>
+
+        <div id="result-container" class="result-container">
+            <div class="result-header">
+                <h2>JSON Output</h2>
+                <button id="copy-btn" class="copy-btn">
+                    <span class="button-icon">📋</span>
+                    Copy
+                </button>
+            </div>
+            <pre id="output"></pre>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <span>Loading data from Google Sheets...</span>
+        </div>
+    </main>
+
+    <footer>
+        <p>Works with public Google Sheets. Make sure your sheet is published to the web.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sheetUrlInput = document.getElementById('sheet-url');
+            const convertBtn = document.getElementById('convert-btn');
+            const output = document.getElementById('output');
+            const resultContainer = document.getElementById('result-container');
+            const loading = document.getElementById('loading');
+            const copyBtn = document.getElementById('copy-btn');
+            const statusMessage = document.getElementById('status-message');
+
+            // Parse CSV properly (handles quotes, commas, new lines)
+            function parseCSV(csvText) {
+                const rows = [];
+                let currentRow = [];
+                let currentValue = '';
+                let insideQuotes = false;
+
+                for (let i = 0; i < csvText.length; i++) {
+                    const char = csvText[i];
+                    const nextChar = csvText[i + 1];
+
+                    if (char === '"' && insideQuotes && nextChar === '"') {
+                        // Double quote inside quoted string
+                        currentValue += '"';
+                        i++;
+                    } else if (char === '"') {
+                        insideQuotes = !insideQuotes;
+                    } else if (char === ',' && !insideQuotes) {
+                        currentRow.push(currentValue.trim());
+                        currentValue = '';
+                    } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+                        if (currentValue || currentRow.length) {
+                            currentRow.push(currentValue.trim());
+                            rows.push(currentRow);
+                        }
+                        currentRow = [];
+                        currentValue = '';
+                    } else {
+                        currentValue += char;
+                    }
+                }
+
+                if (currentValue || currentRow.length) {
+                    currentRow.push(currentValue.trim());
+                    rows.push(currentRow);
+                }
+
+                return rows;
+            }
+
+            function showStatus(message, type) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status ' + type;
+            }
+
+            function hideStatus() {
+                statusMessage.style.display = 'none';
+            }
+
+            async function fetchGoogleSheetCSV(sheetId) {
+                // Clear previous results
+                output.textContent = '';
+                resultContainer.style.display = 'none';
+                loading.style.display = 'flex';
+                hideStatus();
+
+                // Construct the URL
+                let url;
+                if (sheetId.includes('http')) {
+                    // If it's a full URL, extract the ID
+                    const match = sheetId.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+                    if (match && match[1]) {
+                        sheetId = match[1];
+                    }
+                }
+
+                url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const csvText = await response.text();
+
+                    const rows = parseCSV(csvText);
+                    if (rows.length === 0) {
+                        throw new Error('No data found in the sheet');
+                    }
+
+                    const headers = rows.shift();
+                    if (!headers || headers.length === 0) {
+                        throw new Error('No headers found in the sheet');
+                    }
+
+                    const data = rows
+                        .filter(row => row.length > 1 && row[0].trim() !== "")
+                        .map(row => {
+                            let obj = {};
+                            headers.forEach((header, index) => {
+                                let value = row[index] || "";
+
+                                // Parse JSON in 'extra' column
+                                if (header.trim().toLowerCase() === "extra" && value.startsWith("{")) {
+                                    try {
+                                        value = JSON.parse(value);
+                                    } catch (e) {
+                                        console.error("Invalid JSON in extra:", e);
+                                    }
+                                }
+
+                                obj[header.trim()] = value;
+                            });
+                            return obj;
+                        });
+
+                    loading.style.display = "none";
+                    output.textContent = JSON.stringify(data, null, 2);
+                    resultContainer.style.display = "block";
+                    showStatus('Data loaded successfully!', 'success');
+                } catch (error) {
+                    console.error("Error fetching or parsing CSV:", error);
+                    loading.style.display = "none";
+                    showStatus(`Error: ${error.message}`, 'error');
+                }
+            }
+
+            // Event listeners
+            convertBtn.addEventListener('click', function() {
+                const sheetId = sheetUrlInput.value.trim();
+                if (!sheetId) {
+                    showStatus('Please enter a Google Sheet URL or ID', 'error');
+                    return;
+                }
+                fetchGoogleSheetCSV(sheetId);
+            });
+
+            copyBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(output.textContent)
+                    .then(() => {
+                        const originalText = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<span class="button-icon">✓</span> Copied!';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = originalText;
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy text: ', err);
+                        showStatus('Failed to copy text to clipboard', 'error');
+                    });
+            });
+
+            // Allow pressing Enter in the input field
+            sheetUrlInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    convertBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
